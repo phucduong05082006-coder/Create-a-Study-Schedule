@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>StudyTracker - Quản Lý & Theo Dõi Quá Trình Học Tập Cá Nhân</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- Font Awesome 6 CDN for clean academic & productivity icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+
+  <div class="app-layout">
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="app-sidebar" class="app-sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="brand" data-view="dashboard">
+          <div class="brand-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <span>StudyTracker</span>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Tổng quan & Quản lý</div>
+        <a href="#" class="nav-item active" data-view="dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-view="subjects">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <span>Môn học</span>
+        </a>
+        <a href="#" class="nav-item" data-view="schedule">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Lịch học</span>
+        </a>
+        <a href="#" class="nav-item" data-view="tasks">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Công việc</span>
+        </a>
+
+        <div class="nav-section-title">Kế hoạch & Động lực</div>
+        <a href="#" class="nav-item" data-view="study-plan">
+          <i class="fa-solid fa-route"></i>
+          <span>Kế hoạch</span>
+        </a>
+        <a href="#" class="nav-item" data-view="goals">
+          <i class="fa-solid fa-bullseye"></i>
+          <span>Mục tiêu</span>
+        </a>
+        <a href="#" class="nav-item" data-view="timer">
+          <i class="fa-solid fa-stopwatch"></i>
+          <span>Study Timer</span>
+        </a>
+        <a href="#" class="nav-item" data-view="history">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Lịch sử học</span>
+        </a>
+
+        <div class="nav-section-title">Học thuật & Đánh giá</div>
+        <a href="#" class="nav-item" data-view="grades">
+          <i class="fa-solid fa-award"></i>
+          <span>Điểm số & GPA</span>
+        </a>
+        <a href="#" class="nav-item" data-view="statistics">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Thống kê</span>
+        </a>
+        <a href="#" class="nav-item" data-view="notes">
+          <i class="fa-regular fa-note-sticky"></i>
+          <span>Ghi chú</span>
+        </a>
+
+        <div class="nav-section-title">Hệ thống</div>
+        <a href="#" class="nav-item" data-view="settings">
+          <i class="fa-solid fa-gear"></i>
+          <span>Cài đặt</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-avatar" id="sidebar-user-avatar">Q</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-user-name">Trần Minh Quang</div>
+          <div class="user-sub" id="sidebar-user-sub">Kỹ thuật Phần mềm</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <div class="app-main">
+      <!-- HEADER -->
+      <header class="app-header">
+        <div class="header-left">
+          <button id="menu-toggle-btn" class="menu-toggle-btn" aria-label="Mở menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="global-search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="global-search-input" placeholder="Tìm môn học, công việc, ghi chú, mục tiêu..."
+              autocomplete="off">
+            <span class="search-shortcut">Ctrl K</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Active Semester Dropdown -->
+          <div class="semester-selector-wrapper">
+            <select id="header-semester-select" title="Chọn học kỳ"></select>
+          </div>
+
+          <!-- Weekly Report Button -->
+          <button class="btn btn-outline btn-sm" onclick="DashboardModule.openWeeklyReport()" title="Xem báo cáo tuần">
+            <i class="fa-solid fa-file-waveform"></i>
+            <span class="hide-mobile">Báo cáo tuần</span>
+          </button>
+
+          <!-- Notification Bell -->
+          <button id="btn-notification-bell" class="header-btn" title="Thông báo hệ thống">
+            <i class="fa-regular fa-bell"></i>
+            <span id="header-notification-badge" class="notification-badge" style="display:none;">0</span>
+          </button>
+
+          <!-- Notification Drawer Dropdown -->
+          <div id="notification-drawer" class="notification-drawer">
+            <div
+              style="padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+              <span>Thông báo & Deadline</span>
+              <span style="font-size: 0.75rem; color: var(--primary); cursor: pointer;"
+                onclick="NotificationService.updateNotificationBadge()">Làm mới</span>
+            </div>
+            <div id="notification-list" style="overflow-y: auto; max-height: 360px;"></div>
+          </div>
+
+          <!-- Dark / Light Theme Toggle -->
+          <button id="theme-toggle-btn" class="header-btn" title="Chuyển đổi Giao diện Tối/Sáng">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY (SPA VIEWS) -->
+      <main class="content-body">
+
+        <!-- ================= VIEW 1: DASHBOARD ================= -->
+        <section id="view-dashboard" class="view-section active">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-house" style="color:var(--primary);font-size:1.3rem;"></i> Dashboard Tổng Quan
+              </h1>
+              <p>Chào mừng trở lại! Cùng kiểm tra tiến độ học tập và nhiệm vụ hôm nay của bạn.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-primary" onclick="App.navigateTo('timer')">
+                <i class="fa-solid fa-play"></i> Bắt đầu học ngay
+              </button>
+            </div>
+          </div>
+
+          <div class="dashboard-mobile-flow">
+            <!-- Top Row: Streak & Overall Progress (mobile-order-1) -->
+            <div class="dashboard-grid-top mobile-order-1">
+              <!-- Streak Banner -->
+              <div class="dashboard-streak-card">
+                <div class="streak-info-main">
+                  <i class="fa-solid fa-fire streak-flame"></i>
+                  <div>
+                    <div
+                      style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);font-weight:700;">
+                      Chuỗi ngày học tập</div>
+                    <div class="streak-number" id="dash-streak-current">0 ngày liên tục</div>
+                    <div style="font-size:0.775rem;color:var(--text-secondary);margin-top:0.2rem;">
+                      Kỷ lục dài nhất: <strong id="dash-streak-longest" style="color:#f97316;">0 ngày</strong>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="App.navigateTo('history')">Chi tiết chuỗi</button>
+              </div>
+
+              <!-- Overall Progress Bar Card -->
+              <div class="card" style="padding:1.25rem;display:flex;flex-direction:column;justify-content:center;">
+                <div class="progress-meta">
+                  <span style="color:var(--text-secondary);font-size:0.85rem;">Tiến độ học tập tổng thể</span>
+                  <span id="dash-overall-progress-text"
+                    style="font-weight:800;color:var(--primary);font-size:1.15rem;">0%</span>
+                </div>
+                <div class="progress-bar-bg" style="height:12px;">
+                  <div id="dash-overall-progress-bar" class="progress-fill gradient" style="width:0%;"></div>
+                </div>
+                <div style="font-size:0.775rem;color:var(--text-muted);margin-top:0.5rem;">
+                  Tính theo % hoàn thành chương của các môn trong học kỳ.
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats Grid Cards (mobile-order-2) -->
+            <div class="stats-grid mobile-order-2">
+              <div class="stat-card">
+                <div class="stat-top">
+                  <span class="stat-label">Học tập hôm nay</span>
+                  <div class="stat-icon blue"><i class="fa-solid fa-stopwatch"></i></div>
+                </div>
+                <div class="stat-value" id="dash-today-study">0h 0m</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-top">
+                  <span class="stat-label">Tổng giờ đã học</span>
+                  <div class="stat-icon purple"><i class="fa-solid fa-hourglass-half"></i></div>
+                </div>
+                <div class="stat-value" id="dash-total-hours">0 giờ</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-top">
+                  <span class="stat-label">Môn đang học</span>
+                  <div class="stat-icon green"><i class="fa-solid fa-book-open-reader"></i></div>
+                </div>
+                <div class="stat-value" id="dash-subjects-count">0/0</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-top">
+                  <span class="stat-label">Task chưa xong</span>
+                  <div class="stat-icon red"><i class="fa-solid fa-list-check"></i></div>
+                </div>
+                <div class="stat-value" id="dash-tasks-count">0</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-top">
+                  <span class="stat-label">GPA hiện tại</span>
+                  <div class="stat-icon orange"><i class="fa-solid fa-award"></i></div>
+                </div>
+                <div class="stat-value" id="dash-current-gpa">--</div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-top">
+                  <span class="stat-label">Mục tiêu đang chạy</span>
+                  <div class="stat-icon cyan"><i class="fa-solid fa-bullseye"></i></div>
+                </div>
+                <div class="stat-value" id="dash-goals-count">0</div>
+              </div>
+            </div>
+
+            <!-- Two Columns: Today Tasks & Upcoming Deadlines (mobile-order-3, 4) -->
+            <div class="dashboard-columns">
+              <!-- Today's Tasks (mobile-order-4) -->
+              <div class="card mobile-order-4">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class="fa-regular fa-calendar-check" style="color:var(--primary);"></i> Việc cần làm hôm nay
+                  </div>
+                  <button class="btn btn-outline btn-sm" onclick="App.navigateTo('tasks')">Xem tất cả</button>
+                </div>
+                <div class="card-body" id="dash-today-tasks-list"></div>
+              </div>
+
+              <!-- Upcoming Deadlines & Tests (mobile-order-3) -->
+              <div class="card mobile-order-3">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class="fa-solid fa-bell" style="color:var(--warning);"></i> Deadline & Bài thi sắp tới
+                  </div>
+                  <button class="btn btn-outline btn-sm" onclick="App.navigateTo('tasks')">Quản lý</button>
+                </div>
+                <div class="card-body" id="dash-upcoming-list"></div>
+              </div>
+            </div>
+
+            <!-- Two Columns: Weekly Study Chart & Subject Progress (mobile-order-5, 7) -->
+            <div class="dashboard-columns">
+              <!-- Weekly Study Chart (mobile-order-7) -->
+              <div class="card mobile-order-7">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class="fa-solid fa-chart-column" style="color:var(--primary);"></i> Thời gian học tuần này (Giờ)
+                  </div>
+                  <button class="btn btn-outline btn-sm" onclick="App.navigateTo('statistics')">Thống kê chi
+                    tiết</button>
+                </div>
+                <div class="card-body" style="height:260px;position:relative;">
+                  <canvas id="dash-weekly-chart"></canvas>
+                </div>
+              </div>
+
+              <!-- Subject Progress Breakdown (mobile-order-5) -->
+              <div class="card mobile-order-5">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i class="fa-solid fa-bars-progress" style="color:var(--success);"></i> Tiến độ các môn học
+                  </div>
+                  <button class="btn btn-outline btn-sm" onclick="App.navigateTo('subjects')">Tất cả môn</button>
+                </div>
+                <div class="card-body" id="dash-subjects-progress-list"></div>
+              </div>
+            </div>
+
+            <!-- Study Activity Heatmap (GitHub style) (mobile-order-7) -->
+            <div class="card mobile-order-7" style="margin-bottom:1.5rem;">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class="fa-solid fa-fire-flame-curved" style="color:#f97316;"></i> Biểu đồ hoạt động học tập (Study
+                  Heatmap)
+                </div>
+                <span style="font-size:0.8rem;color:var(--text-muted);">24 tuần gần nhất</span>
+              </div>
+              <div class="card-body">
+                <div class="heatmap-container">
+                  <div id="dash-heatmap-grid" class="heatmap-grid"></div>
+                </div>
+                <div class="heatmap-legend">
+                  <span>Ít học</span>
+                  <div class="heatmap-cell"></div>
+                  <div class="heatmap-cell level-1"></div>
+                  <div class="heatmap-cell level-2"></div>
+                  <div class="heatmap-cell level-3"></div>
+                  <div class="heatmap-cell level-4"></div>
+                  <span>Nhiều giờ</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 2: SUBJECTS ================= -->
+        <section id="view-subjects" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-book-bookmark" style="color:var(--primary);font-size:1.3rem;"></i> Quản Lý Môn
+                Học</h1>
+              <p>Quản lý danh sách môn, chương học chi tiết, trọng số điểm và theo dõi tiến độ.</p>
+            </div>
+            <div class="view-actions">
+              <select id="filter-subject-semester" class="form-control" style="width:auto;">
+                <option value="all">Tất cả học kỳ</option>
+                <option value="2025-2026-HK1">HK1 (2025 - 2026)</option>
+                <option value="2025-2026-HK2">HK2 (2025 - 2026)</option>
+              </select>
+              <select id="filter-subject-status" class="form-control" style="width:auto;">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="studying">Đang học</option>
+                <option value="completed">Đã hoàn thành</option>
+                <option value="not_started">Chưa học</option>
+                <option value="paused">Tạm dừng</option>
+              </select>
+              <button id="btn-add-subject" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Thêm môn học
+              </button>
+            </div>
+          </div>
+
+          <div id="subjects-list-container" class="subjects-grid"></div>
+        </section>
+
+        <!-- ================= VIEW 3: SCHEDULE ================= -->
+        <section id="view-schedule" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-calendar-days" style="color:var(--primary);font-size:1.3rem;"></i> Thời Khóa
+                Biểu & Lịch Học</h1>
+              <p>Lịch học hàng tuần, phòng học, giảng viên và khung giờ chi tiết.</p>
+            </div>
+            <div class="view-actions">
+              <div class="filter-tabs">
+                <button id="btn-sched-view-week" class="filter-tab active">Cả tuần</button>
+                <button id="btn-sched-view-day" class="filter-tab">Hôm nay</button>
+              </div>
+              <button id="btn-add-schedule" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Thêm lịch học
+              </button>
+            </div>
+          </div>
+
+          <div id="schedule-grid-container" class="schedule-grid"></div>
+        </section>
+
+        <!-- ================= VIEW 4: TASKS ================= -->
+        <section id="view-tasks" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-list-check" style="color:var(--primary);font-size:1.3rem;"></i> Quản Lý Công
+                Việc & Deadline</h1>
+              <p>Theo dõi bài tập, bài kiểm tra, mức độ ưu tiên và thời hạn chót.</p>
+            </div>
+            <div class="view-actions">
+              <div class="filter-tabs">
+                <button class="filter-tab task-filter-tab active" data-filter="all">Tất cả</button>
+                <button class="filter-tab task-filter-tab" data-filter="today">Hôm nay</button>
+                <button class="filter-tab task-filter-tab" data-filter="upcoming">Sắp tới</button>
+                <button class="filter-tab task-filter-tab" data-filter="overdue">Quá hạn 🔴</button>
+                <button class="filter-tab task-filter-tab" data-filter="completed">Đã xong</button>
+              </div>
+              <select id="task-sort-select" class="form-control" style="width:auto;">
+                <option value="deadline">Xếp theo: Deadline</option>
+                <option value="priority">Xếp theo: Ưu tiên</option>
+                <option value="title">Xếp theo: Tên A-Z</option>
+              </select>
+              <button id="btn-add-task" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Thêm công việc
+              </button>
+            </div>
+          </div>
+
+          <div id="tasks-list-container" class="task-list"></div>
+        </section>
+
+        <!-- ================= VIEW 5: STUDY PLAN ================= -->
+        <section id="view-study-plan" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-route" style="color:var(--primary);font-size:1.3rem;"></i> Kế Hoạch Học Tập &
+                Tương Lai</h1>
+              <p>Lập kế hoạch phân bổ thời gian hôm nay và định hướng các cột mốc tương lai.</p>
+            </div>
+            <div class="view-actions">
+              <button id="btn-add-daily-plan" class="btn btn-primary">
+                <i class="fa-solid fa-clock"></i> Lên lịch khung giờ hôm nay
+              </button>
+            </div>
+          </div>
+
+          <div class="dashboard-columns">
+            <!-- Today Timeline Plan -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class="fa-solid fa-business-time" style="color:var(--primary);"></i> Lịch trình học hôm nay
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="study-plan-today-timeline"></div>
+              </div>
+            </div>
+
+            <!-- Future Milestones (Tháng / Học kỳ) -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class="fa-solid fa-rocket" style="color:var(--accent);"></i> Cột mốc & Kế hoạch tương lai
+                </div>
+              </div>
+              <div class="card-body">
+                <form id="form-add-milestone" style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+                  <input type="text" id="milestone-period-input" class="form-control"
+                    placeholder="Thời điểm (VD: Tháng 10)" style="max-width:140px;" required>
+                  <input type="text" id="milestone-title-input" class="form-control"
+                    placeholder="Mục tiêu / Cột mốc cần đạt..." required>
+                  <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i></button>
+                </form>
+                <div id="future-milestones-list"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 6: GOALS ================= -->
+        <section id="view-goals" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-bullseye" style="color:var(--primary);font-size:1.3rem;"></i> Mục Tiêu Học Tập
+              </h1>
+              <p>Phân loại mục tiêu ngắn hạn, trung hạn và dài hạn để tạo động lực bứt phá.</p>
+            </div>
+            <div class="view-actions">
+              <div class="filter-tabs">
+                <button class="filter-tab goal-filter-tab active" data-type="all">Tất cả</button>
+                <button class="filter-tab goal-filter-tab" data-type="short_term">Ngắn hạn</button>
+                <button class="filter-tab goal-filter-tab" data-type="medium_term">Trung hạn</button>
+                <button class="filter-tab goal-filter-tab" data-type="long_term">Dài hạn</button>
+              </div>
+              <button id="btn-add-goal" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Đặt mục tiêu mới
+              </button>
+            </div>
+          </div>
+
+          <div id="goals-list-container" class="subjects-grid"></div>
+        </section>
+
+        <!-- ================= VIEW 7: TIMER ================= -->
+        <section id="view-timer" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-stopwatch" style="color:var(--primary);font-size:1.3rem;"></i> Study Timer
+                (Pomodoro)</h1>
+              <p>Tập trung học sâu, bấm giờ và tự động lưu phiên học vào lịch sử.</p>
+            </div>
+          </div>
+
+          <div class="card timer-container" style="max-width:650px;margin:0 auto;">
+            <div class="timer-display-box">
+              <div id="timer-digits" class="timer-digits">25:00</div>
+              <div id="timer-status-text" class="timer-status-label">Sẵn sàng</div>
+            </div>
+
+            <div class="timer-controls">
+              <button id="timer-btn-start" class="btn btn-primary"
+                style="padding:0.75rem 2rem;font-size:1.1rem;border-radius:var(--radius-full);">
+                <i class="fa-solid fa-play"></i> Bắt đầu học
+              </button>
+              <button id="timer-btn-pause" class="btn btn-secondary"
+                style="padding:0.75rem 2rem;font-size:1.1rem;border-radius:var(--radius-full);display:none;">
+                <i class="fa-solid fa-pause"></i> Tạm dừng
+              </button>
+              <button id="timer-btn-reset" class="btn btn-outline" style="border-radius:var(--radius-full);"
+                title="Đặt lại">
+                <i class="fa-solid fa-rotate-right"></i> Đặt lại
+              </button>
+              <button id="timer-btn-finish" class="btn btn-success" style="border-radius:var(--radius-full);"
+                title="Kết thúc và lưu phiên">
+                <i class="fa-solid fa-check"></i> Lưu kết quả
+              </button>
+            </div>
+
+            <div class="timer-presets">
+              <button class="btn btn-secondary btn-sm timer-preset-btn" data-mins="25">25 phút</button>
+              <button class="btn btn-secondary btn-sm timer-preset-btn" data-mins="50">50 phút</button>
+              <button class="btn btn-secondary btn-sm timer-preset-btn" data-mins="90">90 phút</button>
+              <button class="btn btn-secondary btn-sm timer-preset-btn" data-mins="5">Nghỉ 5 phút</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 8: HISTORY ================= -->
+        <section id="view-history" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);font-size:1.3rem;"></i> Lịch Sử
+                Học Tập</h1>
+              <p>Danh sách các phiên học đã hoàn thành cùng mức độ tập trung và nội dung chi tiết.</p>
+            </div>
+            <div class="view-actions">
+              <select id="history-subject-filter" class="form-control" style="width:auto;"></select>
+            </div>
+          </div>
+
+          <div id="history-list-container"></div>
+        </section>
+
+        <!-- ================= VIEW 9: GRADES & GPA ================= -->
+        <section id="view-grades" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-award" style="color:var(--primary);font-size:1.3rem;"></i> Điểm Số, GPA & Dự
+                Đoán Điểm</h1>
+              <p>Bảng điểm tổng hợp, chuyển đổi hệ 10 sang hệ 4 và công cụ tính điểm cần đạt.</p>
+            </div>
+          </div>
+
+          <!-- GPA Summary Cards -->
+          <div class="stats-grid" style="margin-bottom:1.5rem;">
+            <div class="stat-card">
+              <div class="stat-label">GPA Hệ 4.0</div>
+              <div class="stat-value" id="calc-gpa-4" style="color:var(--primary);">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Điểm Trung Bình Hệ 10</div>
+              <div class="stat-value" id="calc-gpa-10" style="color:var(--success);">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Tổng số Tín chỉ tích lũy</div>
+              <div class="stat-value" id="calc-total-credits" style="color:var(--accent);">--</div>
+            </div>
+          </div>
+
+          <div class="dashboard-columns">
+            <!-- Target Grade Predictor Tool -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class="fa-solid fa-calculator" style="color:var(--warning);"></i> Công cụ Dự đoán Điểm Mục Tiêu
+                  (Target Grade)
+                </div>
+              </div>
+              <div class="card-body">
+                <form id="form-calc-target-grade">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Điểm hiện tại (quá trình)</label>
+                      <input type="number" step="0.1" min="0" max="10" id="target-current-grade" class="form-control"
+                        value="7.5" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Điểm mục tiêu tổng kết</label>
+                      <input type="number" step="0.1" min="0" max="10" id="target-desired-grade" class="form-control"
+                        value="8.5" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Trọng số bài thi còn lại (%)</label>
+                    <input type="number" min="1" max="100" id="target-remaining-weight" class="form-control" value="40"
+                      required>
+                  </div>
+                  <button type="submit" class="btn btn-primary" style="width:100%;">
+                    <i class="fa-solid fa-bolt"></i> Tính điểm cần đạt
+                  </button>
+                </form>
+                <div id="target-grade-result-box" style="margin-top:1rem;"></div>
+              </div>
+            </div>
+
+            <!-- Grade Conversion Scale -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i class="fa-solid fa-table-columns" style="color:var(--info);"></i> Bảng quy đổi Điểm Chữ & Hệ 4
+                </div>
+              </div>
+              <div class="card-body">
+                <form id="form-grade-scale">
+                  <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                    <thead>
+                      <tr style="border-bottom:1px solid var(--border-color);color:var(--text-muted);text-align:left;">
+                        <th style="padding:0.4rem 0.6rem;">Điểm Chữ</th>
+                        <th style="padding:0.4rem 0.6rem;">Điểm Tối Thiểu (Hệ 10)</th>
+                        <th style="padding:0.4rem 0.6rem;">Quy đổi Hệ 4</th>
+                      </tr>
+                    </thead>
+                    <tbody id="grade-scale-tbody"></tbody>
+                  </table>
+                  <div style="text-align:right;margin-top:0.85rem;">
+                    <button type="submit" class="btn btn-outline btn-sm">Lưu quy đổi</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subject Grades Breakdown Table -->
+          <div class="card" style="margin-top:1.5rem;overflow-x:auto;">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-list-ol"></i> Bảng điểm chi tiết từng môn</div>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:0.875rem;min-width:600px;">
+              <thead>
+                <tr
+                  style="background-color:var(--bg-subtle);border-bottom:1px solid var(--border-color);color:var(--text-muted);text-align:left;">
+                  <th style="padding:0.75rem 1rem;">STT</th>
+                  <th style="padding:0.75rem 1rem;">Tên môn học</th>
+                  <th style="padding:0.75rem 1rem;">Tín chỉ</th>
+                  <th style="padding:0.75rem 1rem;">Chuyên cần</th>
+                  <th style="padding:0.75rem 1rem;">Giữa kỳ</th>
+                  <th style="padding:0.75rem 1rem;">Cuối kỳ</th>
+                  <th style="padding:0.75rem 1rem;">Điểm Tổng Kết</th>
+                </tr>
+              </thead>
+              <tbody id="grades-summary-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 10: STATISTICS ================= -->
+        <section id="view-statistics" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-chart-line" style="color:var(--primary);font-size:1.3rem;"></i> Thống Kê & Phân
+                Tích Hiệu Suất</h1>
+              <p>Phân tích chuyên sâu số giờ học, phân bố điểm và các chỉ số năng suất cá nhân.</p>
+            </div>
+            <div class="view-actions">
+              <select id="stats-hours-period-select" class="form-control" style="width:auto;">
+                <option value="week">Thời gian: Tuần này</option>
+                <option value="month">Thời gian: Tháng này (4 tuần)</option>
+                <option value="day">Thời gian: 7 ngày qua</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Productivity Metrics Summary -->
+          <div class="stats-grid" style="margin-bottom:1.5rem;">
+            <div class="stat-card">
+              <div class="stat-label">Tổng thời gian học</div>
+              <div class="stat-value" id="stat-metric-total-hours">0 giờ</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Trung bình mỗi ngày</div>
+              <div class="stat-value" id="stat-metric-daily-avg">0.0 giờ/ngày</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Ngày học nhiều nhất</div>
+              <div class="stat-value" id="stat-metric-top-day" style="font-size:1.15rem;">Chưa có</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Môn học nhiều nhất</div>
+              <div class="stat-value" id="stat-metric-top-subject" style="font-size:1.15rem;">Chưa có</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Task hoàn thành</div>
+              <div class="stat-value" id="stat-metric-tasks-done">0 / 0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Tỷ lệ hoàn thành Task</div>
+              <div class="stat-value" id="stat-metric-task-rate" style="color:var(--success);">0%</div>
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="dashboard-columns">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-chart-column"></i> Số giờ học tập</div>
+              </div>
+              <div class="card-body" style="height:300px;position:relative;">
+                <canvas id="stats-hours-canvas"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-chart-bar"></i> Tiến độ hoàn thành từng môn (%)</div>
+              </div>
+              <div class="card-body" style="height:300px;position:relative;">
+                <canvas id="stats-subjects-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:1.5rem;">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-award"></i> Phổ điểm các môn học</div>
+            </div>
+            <div class="card-body" style="height:280px;position:relative;">
+              <canvas id="stats-grades-canvas"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 11: NOTES ================= -->
+        <section id="view-notes" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-regular fa-note-sticky" style="color:var(--primary);font-size:1.3rem;"></i> Sổ Tay Ghi
+                Chú Học Tập</h1>
+              <p>Lưu trữ nhanh kiến thức trọng tâm, công thức toán lý và mẹo giải bài tập.</p>
+            </div>
+            <div class="view-actions">
+              <input type="text" id="notes-search-input" class="form-control"
+                placeholder="Tìm theo tiêu đề, nội dung, #tag..." style="width:240px;">
+              <button id="btn-notes-filter-fav" class="btn btn-outline" title="Chỉ hiện ghi chú quan trọng">
+                <i class="fa-solid fa-star"></i> Quan trọng
+              </button>
+              <button id="btn-add-note" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Tạo ghi chú
+              </button>
+            </div>
+          </div>
+
+          <div id="notes-list-container" class="subjects-grid"></div>
+        </section>
+
+        <!-- ================= VIEW 12: SETTINGS ================= -->
+        <section id="view-settings" class="view-section">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h1><i class="fa-solid fa-gear" style="color:var(--primary);font-size:1.3rem;"></i> Cài Đặt Hệ Thống & Dữ
+                Liệu</h1>
+              <p>Tùy chỉnh thông tin cá nhân, mục tiêu giờ học và quản lý sao lưu dữ liệu an toàn.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-columns">
+            <!-- Profile Settings -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-regular fa-user"></i> Hồ sơ sinh viên</div>
+              </div>
+              <div class="card-body">
+                <form id="form-settings-profile">
+                  <div class="form-group">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" id="setting-name-input" class="form-control" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Trường đại học / Cao đẳng</label>
+                    <input type="text" id="setting-university-input" class="form-control">
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Chuyên ngành</label>
+                      <input type="text" id="setting-major-input" class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Khóa học / Niên khóa</label>
+                      <input type="text" id="setting-cohort-input" class="form-control">
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Lưu thông tin hồ sơ</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Study Targets & Semesters -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-bullseye"></i> Mục tiêu giờ học & Học kỳ</div>
+              </div>
+              <div class="card-body">
+                <form id="form-settings-targets" style="margin-bottom:1.5rem;">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Mục tiêu giờ học / ngày</label>
+                      <input type="number" step="0.5" id="setting-target-daily" class="form-control" min="1" max="24"
+                        required>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Mục tiêu giờ học / tuần</label>
+                      <input type="number" step="1" id="setting-target-weekly" class="form-control" min="5" max="100"
+                        required>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-sm">Lưu mục tiêu giờ học</button>
+                </form>
+
+                <div style="border-top:1px solid var(--border-color);padding-top:1rem;">
+                  <label class="form-label">Danh sách Học kỳ</label>
+                  <form id="form-add-semester" style="display:flex;gap:0.5rem;margin-bottom:0.75rem;">
+                    <input type="text" id="new-semester-name-input" class="form-control"
+                      placeholder="Tên học kỳ mới (VD: 2026-2027 HK1)" required>
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i></button>
+                  </form>
+                  <div id="settings-semesters-list"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Backup & Reset Operations -->
+          <div class="card" style="margin-top:1.5rem;">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-database"></i> Quản lý & Sao lưu dữ liệu (LocalStorage)
+              </div>
+            </div>
+            <div class="card-body">
+              <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:1.25rem;">
+                Dữ liệu được lưu an toàn trên trình duyệt của bạn qua <code>localStorage</code>. Bạn có thể xuất file
+                JSON để lưu về máy tính hoặc chuyển sang thiết bị khác bất cứ lúc nào.
+              </p>
+
+              <div style="display:flex;flex-wrap:wrap;gap:0.75rem;">
+                <button id="btn-export-data" class="btn btn-primary">
+                  <i class="fa-solid fa-download"></i> Xuất dữ liệu (Export JSON)
+                </button>
+
+                <label class="btn btn-outline" style="cursor:pointer;margin:0;">
+                  <i class="fa-solid fa-upload"></i> Nhập dữ liệu (Import JSON)
+                  <input type="file" id="input-import-file" accept=".json" style="display:none;">
+                </label>
+
+                <button id="btn-reset-sample-data" class="btn btn-secondary">
+                  <i class="fa-solid fa-rotate"></i> Nạp lại dữ liệu mẫu
+                </button>
+
+                <button id="btn-clear-all-data" class="btn btn-danger">
+                  <i class="fa-solid fa-trash"></i> Xóa sạch toàn bộ dữ liệu
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- MOBILE BOTTOM NAVIGATION -->
+      <nav class="mobile-bottom-nav">
+        <a href="#" class="bottom-nav-item active" data-view="dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-view="subjects">
+          <i class="fa-solid fa-book"></i>
+          <span>Môn học</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-view="tasks">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Task</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-view="timer">
+          <i class="fa-solid fa-stopwatch"></i>
+          <span>Học</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-view="grades">
+          <i class="fa-solid fa-award"></i>
+          <span>GPA</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ================= MODALS SYSTEM ================= -->
+
+  <!-- 1. Modal Add / Edit Subject -->
+  <div id="modal-subject" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-subject-title" class="modal-title">Thêm môn học</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-subject">
+        <div class="modal-body">
+          <input type="hidden" id="subject-id-input">
+          <div class="form-group">
+            <label class="form-label">Tên môn học *</label>
+            <input type="text" id="subject-name-input" class="form-control"
+              placeholder="VD: Cấu trúc dữ liệu & Giải thuật" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Mã môn học *</label>
+              <input type="text" id="subject-code-input" class="form-control" placeholder="VD: CTDL01" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Số tín chỉ *</label>
+              <input type="number" id="subject-credits-input" class="form-control" min="1" max="10" value="3" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Giảng viên phụ trách</label>
+              <input type="text" id="subject-lecturer-input" class="form-control" placeholder="VD: TS. Trần Văn Nam">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Màu nhận diện</label>
+              <input type="color" id="subject-color-input" class="form-control" value="#3b82f6"
+                style="height:42px;padding:0.2rem;">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Học kỳ</label>
+              <select id="subject-semester-select" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Trạng thái môn</label>
+              <select id="subject-status-select" class="form-control">
+                <option value="studying">Đang học</option>
+                <option value="completed">Đã hoàn thành</option>
+                <option value="not_started">Chưa học</option>
+                <option value="paused">Tạm dừng</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu môn học</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Modal Subject Details & Chapters Checklist -->
+  <div id="modal-subject-detail" class="modal-overlay">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3 id="detail-subject-title" class="modal-title">Chi tiết môn học</h3>
+          <div id="detail-subject-meta" style="font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem;"></div>
+        </div>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <!-- Chapters Checklist -->
+        <div style="margin-bottom:1.5rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+            <div style="font-weight:700;color:var(--text-primary);">Nội dung môn học (Chương / Bài học)</div>
+            <span id="detail-progress-summary" style="font-size:0.8rem;font-weight:700;color:var(--primary);">0/0
+              (0%)</span>
+          </div>
+          <div class="progress-bar-bg" style="height:8px;margin-bottom:1rem;">
+            <div id="detail-progress-fill" class="progress-fill success" style="width:0%;"></div>
+          </div>
+
+          <!-- Add Chapter Form -->
+          <form id="form-add-chapter" style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+            <input type="text" id="new-chapter-title" class="form-control"
+              placeholder="Thêm chương mới (VD: Chương 4: Cây nhị phân)..." required>
+            <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Thêm</button>
+          </form>
+
+          <!-- List Chapters -->
+          <div id="detail-chapters-list"></div>
+        </div>
+
+        <!-- Grading Weights & Grade Entry -->
+        <div style="border-top:1px solid var(--border-color);padding-top:1.25rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <div style="font-weight:700;color:var(--text-primary);">Trọng số & Điểm thành phần</div>
+            <div style="font-size:0.85rem;">
+              Tổng kết: <strong id="detail-final-score-badge"
+                style="color:var(--primary);font-size:1.05rem;">--</strong>
+            </div>
+          </div>
+
+          <form id="form-subject-grades">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:0.75rem;">
+              <div class="form-group">
+                <label class="form-label" style="font-size:0.75rem;">Chuyên cần (%)</label>
+                <input type="number" id="weight-attendance" class="form-control" placeholder="Trọng số" min="0"
+                  max="100">
+                <input type="number" step="0.1" id="grade-attendance" class="form-control" placeholder="Điểm" min="0"
+                  max="10" style="margin-top:0.35rem;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size:0.75rem;">Bài tập (%)</label>
+                <input type="number" id="weight-homework" class="form-control" placeholder="Trọng số" min="0" max="100">
+                <input type="number" step="0.1" id="grade-homework" class="form-control" placeholder="Điểm" min="0"
+                  max="10" style="margin-top:0.35rem;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size:0.75rem;">Giữa kỳ (%)</label>
+                <input type="number" id="weight-midterm" class="form-control" placeholder="Trọng số" min="0" max="100">
+                <input type="number" step="0.1" id="grade-midterm" class="form-control" placeholder="Điểm" min="0"
+                  max="10" style="margin-top:0.35rem;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size:0.75rem;">Cuối kỳ (%)</label>
+                <input type="number" id="weight-final" class="form-control" placeholder="Trọng số" min="0" max="100">
+                <input type="number" step="0.1" id="grade-final" class="form-control" placeholder="Điểm" min="0"
+                  max="10" style="margin-top:0.35rem;">
+              </div>
+            </div>
+            <div style="text-align:right;margin-top:0.5rem;">
+              <button type="submit" class="btn btn-primary btn-sm">Lưu điểm & Trọng số</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal Task Add / Edit -->
+  <div id="modal-task" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-task-title" class="modal-title">Thêm công việc</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-task">
+        <div class="modal-body">
+          <input type="hidden" id="task-id-input">
+          <div class="form-group">
+            <label class="form-label">Tên công việc / Nhiệm vụ *</label>
+            <input type="text" id="task-title-input" class="form-control" placeholder="VD: Làm bài tập đồ án cây AVL"
+              required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Môn học</label>
+              <select id="task-subject-select" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hạn chót (Deadline)</label>
+              <input type="datetime-local" id="task-deadline-input" class="form-control">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Mức độ ưu tiên</label>
+              <select id="task-priority-select" class="form-control">
+                <option value="low">Thấp (Low)</option>
+                <option value="medium" selected>Trung bình (Medium)</option>
+                <option value="high">Cao (High)</option>
+                <option value="urgent">Khẩn cấp (Urgent)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Trạng thái</label>
+              <select id="task-status-select" class="form-control">
+                <option value="todo">Chưa làm (Todo)</option>
+                <option value="in_progress">Đang làm (In Progress)</option>
+                <option value="completed">Đã hoàn thành</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ghi chú thêm</label>
+            <textarea id="task-notes-input" class="form-control"
+              placeholder="Yêu cầu cụ thể, liên kết tài liệu..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu công việc</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Modal Schedule Slot Add / Edit -->
+  <div id="modal-schedule" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-schedule-title" class="modal-title">Thêm lịch học</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-schedule">
+        <div class="modal-body">
+          <input type="hidden" id="schedule-id-input">
+          <div class="form-group">
+            <label class="form-label">Môn học *</label>
+            <select id="schedule-subject-select" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ngày trong tuần *</label>
+            <select id="schedule-day-select" class="form-control" required>
+              <option value="2">Thứ 2</option>
+              <option value="3">Thứ 3</option>
+              <option value="4">Thứ 4</option>
+              <option value="5">Thứ 5</option>
+              <option value="6">Thứ 6</option>
+              <option value="7">Thứ 7</option>
+              <option value="1">Chủ nhật</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Giờ bắt đầu *</label>
+              <input type="time" id="schedule-start-time" class="form-control" value="07:30" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Giờ kết thúc *</label>
+              <input type="time" id="schedule-end-time" class="form-control" value="10:00" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Phòng học</label>
+              <input type="text" id="schedule-room-input" class="form-control" placeholder="VD: A3-402">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Giảng viên phụ trách</label>
+              <input type="text" id="schedule-lecturer-input" class="form-control" placeholder="VD: TS. Nam">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu lịch học</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Modal Today Plan Slot -->
+  <div id="modal-daily-plan" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Thêm khung giờ học hôm nay</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-daily-plan">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Bắt đầu *</label>
+              <input type="time" id="plan-start-time" class="form-control" value="19:00" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Kết thúc *</label>
+              <input type="time" id="plan-end-time" class="form-control" value="20:30" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Môn học</label>
+            <select id="plan-subject-select" class="form-control"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nội dung dự định học *</label>
+            <input type="text" id="plan-content-input" class="form-control"
+              placeholder="VD: Làm 5 bài tập LeetCode đồ thị" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lên lịch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. Modal Goal Add / Edit -->
+  <div id="modal-goal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-goal-title" class="modal-title">Đặt mục tiêu học tập</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-goal">
+        <div class="modal-body">
+          <input type="hidden" id="goal-id-input">
+          <div class="form-group">
+            <label class="form-label">Tiêu đề mục tiêu *</label>
+            <input type="text" id="goal-title-input" class="form-control" placeholder="VD: Đạt GPA 3.6 / 4.0 Học kỳ 1"
+              required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Phân loại</label>
+              <select id="goal-type-select" class="form-control">
+                <option value="short_term">Ngắn hạn (tuần/tháng)</option>
+                <option value="medium_term" selected>Trung hạn (học kỳ)</option>
+                <option value="long_term">Dài hạn (năm học/ra trường)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chỉ số đích</label>
+              <input type="text" id="goal-target-input" class="form-control"
+                placeholder="VD: GPA >= 3.6 hoặc 100 bài tập">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              Tiến độ hiện tại: <strong id="goal-progress-val-display">0%</strong>
+            </label>
+            <input type="range" id="goal-progress-input" class="form-control" min="0" max="100" value="0"
+              oninput="document.getElementById('goal-progress-val-display').textContent = this.value + '%'">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Thời hạn hoàn thành</label>
+            <input type="date" id="goal-deadline-input" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mô tả kế hoạch đạt được</label>
+            <textarea id="goal-desc-input" class="form-control"
+              placeholder="Chiến lược và hành động cụ thể để đạt mục tiêu..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu mục tiêu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. Modal Log Study Session (from Timer) -->
+  <div id="modal-log-session" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-award" style="color:var(--warning);"></i> Ghi nhận phiên học</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-log-session">
+        <div class="modal-body">
+          <input type="hidden" id="session-duration-input">
+          <input type="hidden" id="session-focus-rating" value="5">
+
+          <div style="text-align:center;margin-bottom:1.25rem;">
+            <span style="font-size:0.85rem;color:var(--text-muted);">Thời gian vừa hoàn thành:</span>
+            <div id="session-duration-display" style="font-size:2rem;font-weight:800;color:var(--primary);">25 phút
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Môn học vừa học *</label>
+            <select id="session-subject-select" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nội dung / Chủ đề đã học</label>
+            <input type="text" id="session-topic-input" class="form-control"
+              placeholder="VD: Ôn tập Linked List và giải 2 bài tập">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Độ tập trung (1 - 5 sao)</label>
+            <div class="star-rating-select">
+              <i class="fa-solid fa-star" data-val="1"></i>
+              <i class="fa-solid fa-star" data-val="2"></i>
+              <i class="fa-solid fa-star" data-val="3"></i>
+              <i class="fa-solid fa-star" data-val="4"></i>
+              <i class="fa-solid fa-star" data-val="5"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ghi chú thêm</label>
+            <textarea id="session-notes-input" class="form-control"
+              placeholder="Cảm nghĩ hoặc lưu ý cho lần học sau..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Bỏ qua</button>
+          <button type="submit" class="btn btn-primary">Lưu vào Lịch sử</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 8. Modal Note Add / Edit -->
+  <div id="modal-note" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-note-title" class="modal-title">Tạo ghi chú</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-note">
+        <div class="modal-body">
+          <input type="hidden" id="note-id-input">
+          <div class="form-group">
+            <label class="form-label">Tiêu đề ghi chú *</label>
+            <input type="text" id="note-title-input" class="form-control"
+              placeholder="VD: Công thức tính Big O và Đệ quy" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Môn học liên quan</label>
+              <select id="note-subject-select" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tags (cách nhau bởi dấu phẩy)</label>
+              <input type="text" id="note-tags-input" class="form-control" placeholder="VD: thuat-toan, on-thi">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nội dung ghi chú *</label>
+            <textarea id="note-content-input" class="form-control" style="min-height:160px;"
+              placeholder="Ghi chép công thức, code mẫu, ghi nhớ quan trọng..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-modal-cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu ghi chú</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 9. Modal Weekly Report -->
+  <div id="modal-weekly-report" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-file-lines" style="color:var(--primary);"></i> Weekly Study Report
+        </h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="modal-weekly-report-content"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-modal-cancel">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Modal Global Search Results -->
+  <div id="modal-search-results" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-magnifying-glass" style="color:var(--primary);"></i> Kết quả tìm
+          kiếm</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="search-results-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. Reusable Confirm Dialog -->
+  <div id="modal-confirm-dialog" class="modal-overlay">
+    <div class="modal-dialog" style="max-width:440px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i> Xác nhận
+          thao tác</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-dialog-message" style="color:var(--text-secondary);font-size:0.95rem;line-height:1.5;"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-modal-cancel">Hủy bỏ</button>
+        <button type="button" id="btn-confirm-ok" class="btn btn-danger">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- External Chart.js Library via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script>
+
+  <!-- Application Modules -->
+  <script src="js/storage.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/subjects.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/schedule.js"></script>
+  <script src="js/study-plan.js"></script>
+  <script src="js/goals.js"></script>
+  <script src="js/statistics.js"></script>
+  <script src="js/grades.js"></script>
+  <script src="js/notes.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
