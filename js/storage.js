@@ -30,6 +30,10 @@ const StorageService = {
   set(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      // Notify Cloud Sync if user is logged in
+      if (typeof AuthService !== "undefined" && AuthService.scheduleCloudSync) {
+        AuthService.scheduleCloudSync();
+      }
       return true;
     } catch (e) {
       console.error(`Error saving ${key} to localStorage:`, e);
@@ -43,7 +47,17 @@ const StorageService = {
 
   // --- Settings & Profile ---
   getSettings() {
-    return this.get(STORAGE_KEYS.SETTINGS, null);
+    const s = this.get(STORAGE_KEYS.SETTINGS, null);
+    if (s && Array.isArray(s.gradeScale)) {
+      // Auto-upgrade gradeScale to include A+ if missing
+      if (!s.gradeScale.some(g => g.grade === "A+")) {
+        s.gradeScale.unshift({ grade: "A+", min: 9.0, gpa4: 4.0 });
+        const aGrade = s.gradeScale.find(g => g.grade === "A");
+        if (aGrade) aGrade.gpa4 = 3.7;
+        this.saveSettings(s);
+      }
+    }
+    return s;
   },
   saveSettings(settings) {
     return this.set(STORAGE_KEYS.SETTINGS, settings);
@@ -263,6 +277,30 @@ const StorageService = {
     }
   },
 
+  // --- Cloud Sync Helpers ---
+  getAllDataForSync() {
+    const dump = {};
+    for (const [name, key] of Object.entries(STORAGE_KEYS)) {
+      dump[name] = this.get(key, null);
+    }
+    dump._updatedAt = new Date().toISOString();
+    return dump;
+  },
+
+  applyAllDataFromSync(data) {
+    if (!data) return false;
+    for (const [name, key] of Object.entries(STORAGE_KEYS)) {
+      if (data[name] !== undefined && data[name] !== null) {
+        try {
+          localStorage.setItem(key, JSON.stringify(data[name]));
+        } catch (e) {
+          console.error("Error applying cloud data item:", e);
+        }
+      }
+    }
+    return true;
+  },
+
   // --- Seed Sample Data ---
   initDefaultDataIfEmpty(force = false) {
     if (!force && this.getSettings() !== null) {
@@ -295,7 +333,8 @@ const StorageService = {
         activeSemester: "2025-2026-HK1"
       },
       gradeScale: [
-        { grade: "A", min: 8.5, gpa4: 4.0 },
+        { grade: "A+", min: 9.0, gpa4: 4.0 },
+        { grade: "A", min: 8.5, gpa4: 3.7 },
         { grade: "B+", min: 8.0, gpa4: 3.5 },
         { grade: "B", min: 7.0, gpa4: 3.0 },
         { grade: "C+", min: 6.5, gpa4: 2.5 },

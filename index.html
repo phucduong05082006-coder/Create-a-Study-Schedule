@@ -120,6 +120,12 @@
         </div>
 
         <div class="header-right">
+          <!-- Gmail Login & Cloud Sync Button -->
+          <button id="header-btn-auth" class="btn btn-outline btn-sm" title="Tài khoản & Đồng bộ Đám mây">
+            <i class="fa-brands fa-google" style="color:#ea4335;"></i>
+            <span class="hide-mobile">Đăng nhập Gmail</span>
+          </button>
+
           <!-- Active Semester Dropdown -->
           <div class="semester-selector-wrapper">
             <select id="header-semester-select" title="Chọn học kỳ"></select>
@@ -842,6 +848,26 @@
             </div>
           </div>
 
+          <!-- Cloud Sync & Gmail Account Management -->
+          <div class="card" style="margin-top:1.5rem;">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--primary);"></i> Đồng bộ Đám mây & Tài khoản Gmail</div>
+            </div>
+            <div class="card-body">
+              <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:1rem;">
+                Tự động lưu trữ trên Đám mây để bạn có thể truy cập và chỉnh sửa quá trình học tập liên tục trên cả <strong>Laptop, Máy tính bảng và Điện thoại</strong>.
+              </p>
+              <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;">
+                <button class="btn btn-primary" onclick="AuthService.openAuthModal()">
+                  <i class="fa-brands fa-google"></i> Quản lý Tài khoản Gmail & Đồng bộ
+                </button>
+                <button class="btn btn-outline" onclick="AuthService.syncNow()">
+                  <i class="fa-solid fa-rotate"></i> Đồng bộ ngay bây giờ
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Data Backup & Reset Operations -->
           <div class="card" style="margin-top:1.5rem;">
             <div class="card-header">
@@ -928,7 +954,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">Số tín chỉ *</label>
-              <input type="number" id="subject-credits-input" class="form-control" min="1" max="10" value="3" required>
+              <input type="number" step="0.1" id="subject-credits-input" class="form-control" min="0.5" max="30" value="3" placeholder="VD: 2.5 hoặc 3" required>
             </div>
           </div>
           <div class="form-row">
@@ -1388,6 +1414,138 @@
     </div>
   </div>
 
+  <!-- 12. Modal Gmail Login & Multi-Device Cloud Sync -->
+  <div id="modal-auth" class="modal-overlay">
+    <div class="modal-dialog" style="max-width:520px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-brands fa-google" style="color:#ea4335;"></i> Tài khoản Gmail & Đồng bộ Cloud</h3>
+        <button class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- View when Logged Out -->
+        <div id="auth-modal-logged-out">
+          <div style="text-align:center;padding:0.75rem 0 1.25rem;">
+            <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg, #ea4335, #fbbc05, #34a853, #4285f4);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:1.6rem;margin-bottom:0.75rem;box-shadow:0 4px 15px rgba(66,133,244,0.3);">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <h4 style="font-size:1.15rem;font-weight:700;color:var(--text-primary);margin-bottom:0.35rem;">
+              Đồng bộ dữ liệu trên Laptop & Điện thoại
+            </h4>
+            <p style="font-size:0.875rem;color:var(--text-muted);max-width:390px;margin:0 auto;line-height:1.5;">
+              Đăng nhập cùng một tài khoản Gmail để dữ liệu học tập tự động lưu trữ trên Đám mây và đồng bộ 2 chiều tức thì giữa máy tính và điện thoại.
+            </p>
+          </div>
+
+          <!-- Google Sign-in Button -->
+          <div style="margin-bottom:1.25rem;">
+            <button id="btn-google-signin" class="google-signin-btn" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.87c2.26-2.09 3.67-5.17 3.67-9.15z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-3.05c-1.08.72-2.45 1.16-4.06 1.16-3.13 0-5.78-2.11-6.73-4.96H1.28v3.15C3.31 21.36 7.37 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.27 14.24A7.18 7.18 0 0 1 4.9 12c0-.78.14-1.54.37-2.24V6.61H1.28A11.967 11.967 0 0 0 0 12c0 1.92.45 3.74 1.28 5.39l3.99-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.37 0 3.31 2.64 1.28 6.61l3.99 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/>
+              </svg>
+              <span>Tiếp tục với Google</span>
+            </button>
+          </div>
+
+          <!-- Divider -->
+          <div style="display:flex;align-items:center;margin:1.25rem 0;color:var(--text-muted);font-size:0.8rem;">
+            <div style="flex:1;height:1px;background-color:var(--border-color);"></div>
+            <span style="padding:0 0.75rem;text-transform:uppercase;font-weight:600;letter-spacing:0.05em;">Hoặc nhập Gmail để đồng bộ</span>
+            <div style="flex:1;height:1px;background-color:var(--border-color);"></div>
+          </div>
+
+          <!-- Quick Gmail Form -->
+          <form id="form-quick-gmail">
+            <div class="form-group">
+              <label class="form-label">Địa chỉ Gmail của bạn *</label>
+              <input type="email" id="quick-gmail-input" class="form-control" placeholder="vidu@gmail.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tên hiển thị (Tùy chọn)</label>
+              <input type="text" id="quick-name-input" class="form-control" placeholder="Tên của bạn">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5rem;">
+              <i class="fa-solid fa-cloud"></i> Bắt đầu đồng bộ với Gmail này
+            </button>
+          </form>
+        </div>
+
+        <!-- View when Logged In -->
+        <div id="auth-modal-logged-in" style="display:none;">
+          <!-- User Profile Card -->
+          <div style="display:flex;align-items:center;gap:1rem;padding:1.15rem;border-radius:var(--radius-lg);background:linear-gradient(135deg, var(--primary-light), var(--accent-light));margin-bottom:1.25rem;border:1px solid rgba(var(--primary-rgb),0.2);">
+            <div id="auth-modal-user-avatar" class="user-avatar" style="width:52px;height:52px;font-size:1.4rem;background-color:var(--primary);color:#fff;">Q</div>
+            <div style="flex:1;overflow:hidden;">
+              <div id="auth-modal-user-name" style="font-size:1.1rem;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Trần Minh Quang</div>
+              <div id="auth-modal-user-email" style="font-size:0.85rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">quang.tran@gmail.com</div>
+              <div style="font-size:0.75rem;color:var(--primary);font-weight:600;margin-top:0.25rem;">
+                <i class="fa-solid fa-circle-check"></i> Đang hoạt động trên Đám mây
+              </div>
+            </div>
+          </div>
+
+          <!-- Cloud Sync Card -->
+          <div class="card" style="padding:1rem;margin-bottom:1.25rem;background-color:var(--bg-subtle);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">
+                Trạng thái đồng bộ:
+              </div>
+              <span id="auth-modal-sync-status" style="font-size:0.8rem;color:var(--success);font-weight:600;">
+                <i class="fa-solid fa-cloud-check"></i> Đã đồng bộ an toàn
+              </span>
+            </div>
+            <div id="auth-modal-last-sync" style="font-size:0.775rem;color:var(--text-muted);margin-bottom:0.85rem;">
+              Lần đồng bộ gần nhất: Vừa xong
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:0.65rem;border-top:1px solid var(--border-light);font-size:0.85rem;">
+              <span>Tự động đồng bộ khi thay đổi dữ liệu</span>
+              <label class="switch-toggle" style="margin:0;">
+                <input type="checkbox" id="toggle-auto-sync" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+            <button id="btn-sync-now" class="btn btn-primary" style="flex:1;">
+              <i class="fa-solid fa-rotate"></i> Đồng bộ ngay
+            </button>
+            <button id="btn-auth-signout" class="btn btn-outline" style="color:var(--danger);border-color:var(--danger);">
+              <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </button>
+          </div>
+        </div>
+
+        <!-- Firebase Config Info Accordion / Drawer -->
+        <div style="margin-top:1.5rem;border-top:1px dashed var(--border-color);padding-top:1rem;">
+          <details style="font-size:0.825rem;color:var(--text-secondary);">
+            <summary style="cursor:pointer;font-weight:600;color:var(--primary);margin-bottom:0.5rem;">
+              <i class="fa-solid fa-sliders"></i> Tùy chỉnh Firebase Cloud Project (Nâng cao)
+            </summary>
+            <p style="margin:0.4rem 0;color:var(--text-muted);">
+              Mặc định StudyTracker tự động đồng bộ theo tài khoản Gmail. Nếu bạn muốn kết nối với Project Firebase riêng của bạn (miễn phí), dán <code>firebaseConfig</code> dạng JSON vào đây:
+            </p>
+            <form id="form-firebase-config" style="margin-top:0.5rem;">
+              <textarea id="firebase-config-json-input" class="form-control" style="font-family:monospace;font-size:0.75rem;min-height:90px;" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}'></textarea>
+              <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.5rem;">
+                <button type="submit" class="btn btn-outline btn-sm">Lưu cấu hình Firebase</button>
+              </div>
+            </form>
+          </details>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-modal-cancel">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST CONTAINER -->
   <div id="toast-container" class="toast-container"></div>
 
@@ -1395,9 +1553,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous"
     referrerpolicy="no-referrer"></script>
 
+  <!-- Google Firebase SDKs (Compat version for Vanilla JS) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
   <!-- Application Modules -->
   <script src="js/storage.js"></script>
   <script src="js/notifications.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/timer.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/subjects.js"></script>

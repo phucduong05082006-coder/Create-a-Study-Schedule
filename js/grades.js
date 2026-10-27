@@ -34,7 +34,8 @@ const GradesModule = {
     const subjects = StorageService.getSubjects();
     const settings = StorageService.getSettings() || {};
     const scale = settings.gradeScale || [
-      { grade: "A", min: 8.5, gpa4: 4.0 },
+      { grade: "A+", min: 9.0, gpa4: 4.0 },
+      { grade: "A", min: 8.5, gpa4: 3.7 },
       { grade: "B+", min: 8.0, gpa4: 3.5 },
       { grade: "B", min: 7.0, gpa4: 3.0 },
       { grade: "C+", min: 6.5, gpa4: 2.5 },
@@ -103,7 +104,7 @@ const GradesModule = {
 
     if (el4) el4.textContent = gpa.gpa4 !== null ? gpa.gpa4.toFixed(2) : "--";
     if (el10) el10.textContent = gpa.gpa10 !== null ? gpa.gpa10.toFixed(2) : "--";
-    if (elCredits) elCredits.textContent = gpa.totalCredits;
+    if (elCredits) elCredits.textContent = gpa.totalCredits % 1 === 0 ? gpa.totalCredits : parseFloat(gpa.totalCredits.toFixed(2));
   },
 
   renderGradesTable() {

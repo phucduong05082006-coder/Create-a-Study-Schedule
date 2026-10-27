@@ -24,6 +24,7 @@ const App = {
     this.populateHeaderSemesters();
 
     // 6. Initialize Core Modules
+    AuthService.init();
     TimerModule.init();
     DashboardModule.init();
     SubjectsModule.init();

@@ -16,6 +16,7 @@ StudyTracker là một ứng dụng web Single Page Application (SPA) hiện đ�
 
 * **Quản Lý Môn Học (Subjects)**:
   * CRUD đầy đủ theo từng học kỳ.
+  * **Hỗ trợ số tín chỉ là số thực**: Cho phép nhập số thập phân như `2.5` tín chỉ, `1.5` tín chỉ, `3.0` tín chỉ,... phù hợp quy chế học chế tín chỉ các trường đại học.
   * Thẻ môn học với mã màu riêng, giảng viên, số tín chỉ, tiến độ và điểm số.
   * **Checklist chương học**: Tích chọn hoàn thành từng chương, hệ thống tự động tính toán tỷ lệ hoàn thành % môn học và cập nhật lên Dashboard.
   * **Cấu hình trọng số điểm**: Điểm chuyên cần, bài tập, giữa kỳ, cuối kỳ với công thức tính điểm tổng kết tự động.
@@ -48,13 +49,17 @@ StudyTracker là một ứng dụng web Single Page Application (SPA) hiện đ�
 
 * **Điểm Số, GPA & Dự Đoán Điểm (Grades)**:
   * Tự động tính GPA thang điểm 4.0 và Điểm trung bình thang 10 có trọng số tín chỉ.
-  * Bảng quy đổi điểm chữ (A, B+, B, C+, C, D+, D, F) có thể chỉnh sửa ngưỡng điểm.
+  * **Hỗ trợ mức điểm A+**: Bảng quy đổi có đầy đủ mức `A+` (>= 9.0, GPA 4.0), `A`, `B+`, `B`, `C+`, `C`, `D+`, `D`, `F` và cho phép tùy chỉnh ngưỡng điểm quy đổi linh hoạt.
   * **Công cụ Target Grade**: Nhập điểm hiện tại, điểm mục tiêu và % bài thi còn lại để tính chính xác số điểm tối thiểu cần đạt ở bài thi cuối kỳ.
 
 * **Ghi Chú Học Tập (Notes)**:
   * Quản lý công thức, ghi chép học tập theo thẻ môn, gắn `#tags`, đánh dấu quan trọng (Favorite) và tìm kiếm tức thì.
 
 * **Hệ Thống Tiện Ích Toàn Ứng Dụng**:
+  * **Đăng nhập Gmail & Đồng bộ Đa thiết bị (Cloud Sync)**:
+    * Đăng nhập bằng tài khoản Google (Gmail).
+    * Đồng bộ dữ liệu học tập tự động 2 chiều giữa **Laptop, Máy tính bảng và Điện thoại**.
+    * Hoạt động theo mô hình Offline-First: Vừa lưu cực nhanh vào `localStorage`, vừa đồng bộ lên Đám mây (Firebase Firestore) khi có mạng.
   * **Tìm kiếm toàn cục (Global Search)**: Nhấn `Ctrl + K` hoặc gõ trên thanh tìm kiếm để tìm nhanh môn học, công việc, mục tiêu, ghi chú.
   * **Thông báo nội bộ (In-app Alerts & Toasts)**: Cảnh báo công việc quá hạn, deadline khẩn cấp < 48 giờ.
   * **Dark Mode / Light Mode**: Chuyển đổi giao diện sáng/tối mượt mà, lưu trạng thái vào `localStorage`.
@@ -103,6 +108,7 @@ Theo Dõi Quá Trình Học Tập/
 ├── js/
 │   ├── storage.js              # Engine LocalStorage, Schema, Sample Data seeding, Export/Import JSON
 │   ├── notifications.js        # Toasts UI, In-app Alert Center quét deadline & Web Audio API
+│   ├── auth.js                 # Đăng nhập Gmail (Google Auth), Cloud Sync đa thiết bị
 │   ├── timer.js                # Pomodoro / Custom timer engine, ghi nhận phiên học
 │   ├── dashboard.js            # Tính toán chỉ số tổng thể, streak, biểu đồ 7 ngày, heatmap
 │   ├── subjects.js             # Quản lý môn học, checklist chương học %, tính điểm thành phần
